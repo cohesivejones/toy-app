@@ -1,1 +1,4 @@
 typer>=0.9.0
+# Development dependencies (not required for running the app)
+# PyInstaller is used for building the Windows binary
+pyinstaller>=5.0.0; platform_system=="Windows"
