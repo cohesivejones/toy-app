@@ -2,34 +2,74 @@ name: Build Windows Binary
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: windows-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-        
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pyinstaller
-        
-    - name: Build with PyInstaller
-      run: |
-        pyinstaller --onefile --name hello_world_app main.py
-        
-    - name: Upload binary
-      uses: actions/upload-artifact@v3
-      with:
-        name: hello_world_app
-        path: dist/hello_world_app.exe
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller pywin32
+
+      - name: Create version info file
+        run: |
+          $VERSION = Get-Content version.txt
+          $MAJOR, $MINOR, $PATCH = $VERSION.Split('.')
+          if (-not $PATCH) { $PATCH = "0" }
+          $BUILD = "0"
+
+          $CONTENT = @"
+          VSVersionInfo(
+            ffi=FixedFileInfo(
+              filevers=($MAJOR, $MINOR, $PATCH, $BUILD),
+              prodvers=($MAJOR, $MINOR, $PATCH, $BUILD),
+              mask=0x3f,
+              flags=0x0,
+              OS=0x40004,
+              fileType=0x1,
+              subtype=0x0,
+              date=(0, 0)
+              ),
+            kids=[
+              StringFileInfo(
+                [
+                StringTable(
+                  u'040904B0',
+                  [StringStruct(u'CompanyName', u''),
+                  StringStruct(u'FileDescription', u'Hello World App'),
+                  StringStruct(u'FileVersion', u'$VERSION'),
+                  StringStruct(u'InternalName', u'hello_world_app'),
+                  StringStruct(u'LegalCopyright', u''),
+                  StringStruct(u'OriginalFilename', u'hello_world_app.exe'),
+                  StringStruct(u'ProductName', u'Hello World App'),
+                  StringStruct(u'ProductVersion', u'$VERSION')])
+                ]), 
+              VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
+            ]
+          )
+          "@
+
+          Set-Content -Encoding UTF8 -Path version_info.txt -Value $CONTENT
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --onefile --name hello_world_app --version-file version_info.txt main.py
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: hello_world_app
+          path: dist/hello_world_app.exe

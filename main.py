@@ -1,9 +1,32 @@
 #!/usr/bin/env python3
+import sys
 import typer
 from typing import Optional
 
-# Define the app version
-APP_VERSION = "0.1.0"
+def get_version():
+    """
+    Get application version:
+    1. Try to read from the executable's version info (when running as exe)
+    2. Return "development version" if not running as exe or if reading fails
+    """
+    # Check if running as compiled binary
+    if getattr(sys, 'frozen', False):
+        try:
+            import win32api
+            exe_path = sys.executable
+            version_info = win32api.GetFileVersionInfo(exe_path, '\\')
+            ms = version_info['FileVersionMS']
+            ls = version_info['FileVersionLS']
+            version = f"{win32api.HIWORD(ms)}.{win32api.LOWORD(ms)}.{win32api.HIWORD(ls)}.{win32api.LOWORD(ls)}"
+            return version
+        except (ImportError, Exception):
+            pass  # Fall through to development version
+    
+    # Return development version if not running as exe or if reading fails
+    return "development version"
+
+# Get version and app name
+APP_VERSION = get_version()
 APP_NAME = "Hello World App"
 
 # Create a Typer app instance

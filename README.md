@@ -34,7 +34,7 @@ python main.py --version
 
 This will output:
 ```
-Hello World App v0.1.0
+Hello World App vdevelopment version
 ```
 
 ## Making the script executable (Unix/Linux/macOS)
@@ -52,9 +52,17 @@ chmod +x main.py
 - Python 3.6+
 - Typer library
 
+## Version Information
+
+The application version is stored in `version.txt` at the root of the repository. This version is:
+
+1. Used during the build process to embed version information into the Windows executable
+2. Read directly from the executable's metadata when running the compiled binary
+3. When running in development mode (not as a compiled executable), the application will display "development version"
+
 ## Windows Binary
 
-This repository includes a GitHub Actions workflow that automatically builds a Windows executable (.exe) file for this application. This allows Windows users to run the application without needing to install Python or any dependencies.
+This repository includes a GitHub Actions workflow that automatically builds a Windows executable (.exe) file for this application. This allows Windows users to run the application without needing to install Python or any dependencies. The executable includes embedded version information that can be viewed in the file properties dialog on Windows.
 
 ### Downloading the Windows Binary
 
