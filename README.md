@@ -62,7 +62,19 @@ The application version is stored in `version.txt` at the root of the repository
 
 ## Windows Binary
 
-This repository includes a GitHub Actions workflow that automatically builds a Windows executable (.exe) file for this application. This allows Windows users to run the application without needing to install Python or any dependencies. The executable includes embedded version information that can be viewed in the file properties dialog on Windows.
+This repository includes a GitHub Actions workflow that builds a Windows executable (.exe) file for this application. This allows Windows users to run the application without needing to install Python or any dependencies. The executable includes embedded version information that can be viewed in the file properties dialog on Windows.
+
+The workflow can be triggered in three ways:
+1. Automatically on push to the main branch
+2. Automatically on pull requests to the main branch
+3. Manually from the Actions tab in the GitHub repository
+
+To manually trigger the workflow:
+1. Go to the [Actions tab](https://github.com/username/hello-world-app/actions)
+2. Select the "Build Windows Binary" workflow from the left sidebar
+3. Click the "Run workflow" button
+4. Select the branch you want to build from (usually main)
+5. Click "Run workflow" to start the build process
 
 ### Downloading the Windows Binary
 
